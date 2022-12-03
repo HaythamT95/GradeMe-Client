@@ -5,6 +5,7 @@ import SignUp from './client/SignUp'
 import SignIn from './client/SignIn'
 import Home from './client/Home'
 import Account from './client/Account';
+import Course from './client/Course';
 import axios from "axios"
 import { HOST } from "./models/network"
 import { AuthProvider } from './context/auth';
@@ -22,20 +23,9 @@ export default function App() {
       console.log(resp.data.error)
       return
     }
-    console.log("connection success")
+    console.log(resp.data)
   }
 
-  const removeAppKeys = async () => {
-    let keys = []
-    try {
-      keys = await AsyncStorage.getAllKeys()
-      console.log(`Keys: ${keys}`) // Just to see what's going on
-      await AsyncStorage.multiRemove(keys)
-    } catch(e) {
-     console.log(e)
-    }
-    console.log('Done')
-  }
   checkConnection();
   return (
    // <Navigation/>
@@ -45,17 +35,12 @@ export default function App() {
           <Stack.Screen name="SignUp" component={SignUp}></Stack.Screen>
           <Stack.Screen name="SignIn" component={SignIn}></Stack.Screen>
           <Stack.Screen name="Home" component={Home} options={{ headerRight: () => <HeaderTabs /> }}></Stack.Screen>
+          <Stack.Screen name="Course" component={Course} />
           <Stack.Screen name="Account" component={Account} />
         </Stack.Navigator>
       </AuthProvider>
     </NavigationContainer>
 
-    // <SignUp/>
-    /*
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
-    */
   );
 }
 

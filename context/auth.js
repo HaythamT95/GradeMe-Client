@@ -8,7 +8,6 @@ const AuthProvider = ({ children }) => {
         user: null,
         token: ""
     })
-
     useEffect(() => {
         const loadFromAsyncStorage = async () => {
             try {

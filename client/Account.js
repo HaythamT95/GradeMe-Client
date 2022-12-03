@@ -11,7 +11,6 @@ const Account = () => {
     const getUserData = async () => {
         const data = await AsyncStorage.getItem("auth-rn").catch(err => err);
         const dataParsed=JSON.parse(data)
-
         setName(dataParsed.user.name);
         setEmail(dataParsed.user.email);
         setRole(dataParsed.user.role);

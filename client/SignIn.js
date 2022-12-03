@@ -10,6 +10,7 @@ const SignIn = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [state,setState]= useState(AuthContext)
+    const {courses,setCourses}=useState(AuthContext)
 
     const handleSubmit = async () => {
         if ( email === '' || password === '') {
@@ -21,6 +22,7 @@ const SignIn = ({ navigation }) => {
             alert(resp.data.error)
         else{
             setState(resp.data)
+            console.log(resp.data)
             await AsyncStorage.setItem("auth-rn",JSON.stringify(resp.data)).catch(err=>err)
             alert("Sign In Successful");
             navigation.navigate('Home')
