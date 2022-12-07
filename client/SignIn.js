@@ -7,12 +7,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { AuthContext } from '../context/auth'
 
 const SignIn = ({ navigation }) => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("alex@gmail.com");
+    const [password, setPassword] = useState("alex123");
     const [state,setState]= useState(AuthContext)
     const {courses,setCourses}=useState(AuthContext)
 
     const handleSubmit = async () => {
+
+        //setEmail("alex@gmail.com")
+        //setPassword("alex123")
+
         if ( email === '' || password === '') {
             alert("All fields are required");
             return;
