@@ -61,7 +61,8 @@ export default function Home({ navigation }) {
             <Item
                 item={item}
                 onPress={() => {
-                    setSelectedId(item.courseID); navigation.navigate({
+                    setSelectedId(item.courseID); 
+                    navigation.navigate({
                         name: 'Course',
                         params: { courseID: item.courseID },
                     });

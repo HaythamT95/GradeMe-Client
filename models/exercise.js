@@ -7,7 +7,7 @@ const exerciseSchema = new Schema(
             type:Date,
         },
         exercise:{
-            type:Buffer
+            type:Object
         },
         title:{
             type:String
@@ -16,7 +16,7 @@ const exerciseSchema = new Schema(
             type:String
         },
         listOfSubmitter:{
-            type:Array,
+            type:Object,
         }
     }
 )

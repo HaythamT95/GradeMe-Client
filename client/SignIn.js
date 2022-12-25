@@ -7,6 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { AuthContext } from '../context/auth'
 
 const SignIn = ({ navigation }) => {
+    //const [email, setEmail] = useState("haytham_r10_r9@hotmail.com");
+    //const [password, setPassword] = useState("haytham123");
     const [email, setEmail] = useState("alex@gmail.com");
     const [password, setPassword] = useState("alex123");
     const [state,setState]= useState(AuthContext)
@@ -28,7 +30,6 @@ const SignIn = ({ navigation }) => {
             setState(resp.data)
             console.log(resp.data)
             await AsyncStorage.setItem("auth-rn",JSON.stringify(resp.data)).catch(err=>err)
-            alert("Sign In Successful");
             navigation.navigate('Home')
         }
     };

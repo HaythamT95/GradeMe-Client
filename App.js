@@ -6,6 +6,7 @@ import SignIn from './client/SignIn'
 import Home from './client/Home'
 import Account from './client/Account';
 import Course from './client/Course';
+import Submitters from './client/Submitters';
 import axios from "axios"
 import { HOST } from "./models/network"
 import { AuthProvider } from './context/auth';
@@ -37,6 +38,7 @@ export default function App() {
           <Stack.Screen name="Home" component={Home} options={{ headerRight: () => <HeaderTabs /> }}></Stack.Screen>
           <Stack.Screen name="Course" component={Course} />
           <Stack.Screen name="Account" component={Account} />
+          <Stack.Screen name="Submitters" component={Submitters} />
         </Stack.Navigator>
       </AuthProvider>
     </NavigationContainer>
