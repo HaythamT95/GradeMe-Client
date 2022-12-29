@@ -3,7 +3,7 @@ import React from "react"
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5"
 
 const FooterItem = ({ name, text ,handlePress,screenName,routeName}) => {
-    const activeScreenColor=screenName===routeName&&"darkmagenta";
+    const activeScreenColor=screenName===routeName&&"#5669FF";
     return (
         <TouchableOpacity onPress={handlePress}>
             <>

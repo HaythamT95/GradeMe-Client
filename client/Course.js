@@ -311,7 +311,7 @@ const Course = ({ navigation, route }) => {
                 <View style={{ flex: 1 }}>
                     <Text style={styles.mainText}>{course[0].courseName}</Text>
                     <Pressable style={styles.button} onPress={openExercises}>
-                        <Text style={styles.text}>Exercises {!openexercises ?
+                        <Text style={[styles.text]}>Exercises {!openexercises ?
                             <MaterialIcons name="arrow-forward-ios" size={15} color="white" /> :
                             <MaterialIcons name="keyboard-arrow-down" size={15} color="white" />}
                         </Text>
@@ -391,10 +391,11 @@ const styles = StyleSheet.create({
     imageStyles: { width: 25, height: 25 },
     mainText: {
         fontSize: 30,
-        textAlign: "left",
+        textAlign: "center",
         padding: 10,
         marginVertical: 8,
         marginHorizontal: 16,
+        fontWeight: 'bold',
     },
     indicator: {
         flex: 1,

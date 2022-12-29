@@ -1,11 +1,10 @@
-import { FlatList, SafeAreaView, StyleSheet, TouchableOpacity, Text, View,ActivityIndicator } from "react-native"
+import { FlatList, SafeAreaView, StyleSheet, TouchableOpacity, Text, View, ActivityIndicator } from "react-native"
 import React, { useContext, useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { AuthContext } from '../context/auth.js'
-import SignIn from "./SignIn"
 import axios from "axios"
 import { HOST } from "../models/network"
 import FooterList from '../components/FooterList.js'
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 export default function Home({ navigation }) {
     const [course, setCourse] = useState([])
@@ -40,8 +39,11 @@ export default function Home({ navigation }) {
     };
 
     const Item = ({ item, onPress, backgroundColor }) => (
-        <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-            <Text style={[styles.title]}>{item.courseName}</Text>
+        <TouchableOpacity onPress={onPress}>
+            <View style={[styles.item, backgroundColor]}>
+                <Text style={[styles.title]}>{item.courseName}</Text>
+                <FontAwesome5 name="angle-right" size={25} color="white" />
+            </View>
         </TouchableOpacity>
     );
 
@@ -55,13 +57,13 @@ export default function Home({ navigation }) {
         );
     }
     const renderItem = ({ item }) => {
-        const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#3066be";
+        const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#5669FF";
 
         return (
             <Item
                 item={item}
                 onPress={() => {
-                    setSelectedId(item.courseID); 
+                    setSelectedId(item.courseID);
                     navigation.navigate({
                         name: 'Course',
                         params: { courseID: item.courseID },
@@ -74,31 +76,37 @@ export default function Home({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <FlatList
-                data={course}
-                renderItem={renderItem}
-                ListEmptyComponent={myListEmpty}
-                keyExtractor={(item) => item.courseID}
-                ListHeaderComponent={() => (
-                    <Text style={{ fontSize: 30, textAlign: "center", marginTop: 20, fontWeight: 'bold', textDecorationLine: 'underline' }}>
-                        My Courses
-                    </Text>
-                )}
-            />
+            <View style={{ flex: 1 }}>
+                <FlatList
+                    data={course}
+                    renderItem={renderItem}
+                    ListEmptyComponent={myListEmpty}
+                    keyExtractor={(item) => item.courseID}
+                    ListHeaderComponent={() => (
+                        <Text style={{ fontSize: 30, textAlign: "center", marginTop: 10, marginBottom: 10, fontWeight: 'bold' }}>
+                            My Courses
+                        </Text>
+                    )}
+                />
+            </View>
             <FooterList />
         </SafeAreaView>
     );
 }
 
+
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: "space-between" },
     mainText: { fontSize: 30, textAlign: "center" },
     item: {
+        flex: 1,
         backgroundColor: '#3066be',
-        borderRadius: 45,
+        borderRadius: 15,
         padding: 25,
         marginVertical: 8,
         marginHorizontal: 16,
+        flexDirection: 'row',
+        justifyContent:'space-between'
     },
     title: {
         fontSize: 32,

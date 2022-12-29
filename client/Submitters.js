@@ -13,7 +13,7 @@ const Submitters = ({ navigation, route }) => {
     const [studentGrade,setStudentGrade]=useState("")
     const [comment,setComment] = useState("")
     const [studentName,setStudentName] = useState('')
-
+    console.log(listOfSubmitter)
     useEffect(() => {
         setListOfSubmitter(route.params?.listOfSubmitter)
         setExerciseID(route.params?.exerciseID)
@@ -21,6 +21,10 @@ const Submitters = ({ navigation, route }) => {
 
     const handleSubmit = async ()=>{
         try{
+            if(studentGrade < 0 || studentGrade > 100){
+                alert("Please enter valid grade");
+                return
+            }
             const response = await axios.post(`http://${HOST}:8000/updateStudentGrade`, {exerciseID,studentId,studentGrade,comment}).then(res => {
                 alert("Submit success");
                 console.log(res)
@@ -121,12 +125,8 @@ const Submitters = ({ navigation, route }) => {
                             <Pressable style={[styles.addBtn, { marginBottom: 50 }]} onPress={downloadFile}><Text style={{ color: "blue", fontSize: 20 }}>Download
                                 <MaterialIcons name="file-download" size={20} color="black"></MaterialIcons>
                             </Text></Pressable>
-
-                            {/* <Pressable style={styles.addBtn} onPress={handleUpload}><Text style={{ color: "blue", fontSize: 20 }}>Upload Your File
-                                <MaterialIcons name="file-upload" size={20} color="black"></MaterialIcons>
-                            </Text></Pressable> */}
                            
-                            <Text style={[styles.modalText, { marginBottom: 10 }]}>Grade:
+                            <Text style={[styles.modalText, { marginBottom: 10 }]}>Grade:{studentGrade}
                            
                              </Text>
                               <TextInput style={styles.input} keyboardType='numeric' onChangeText={(text) => setStudentGrade(text)}></TextInput>

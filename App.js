@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Button, Text, Image, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignUp from './client/SignUp'
@@ -9,17 +9,32 @@ import Course from './client/Course';
 import Submitters from './client/Submitters';
 import axios from "axios"
 import { HOST } from "./models/network"
-import { AuthProvider } from './context/auth';
+import { AuthContext, AuthProvider } from './context/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import HeaderTabs from './components/HeaderTabs'
+import { useContext } from 'react';
+import Navigation from './components/Navigation';
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  // const [state, setState] = useContext(AuthContext);
+  // const authenticated = state && state.token !== "" && state.user !== null;
+
+  const image = require("./assets/moodle-logo.png")
+  function LogoTitle() {
+    return (
+      <Image
+        style={{ width: 50, height: 50 }}
+        source={image}
+      />
+    );
+  }
 
   const checkConnection = async () => {
 
-    const resp = await axios.get(`http://${HOST}:8000/hello`).catch(err=>err)
+    const resp = await axios.get(`http://${HOST}:8000/hello`).catch(err => err)
     if (resp.data.error) {
       console.log(resp.data.error)
       return
@@ -29,23 +44,28 @@ export default function App() {
 
   checkConnection();
   return (
-   // <Navigation/>
+    //<Navigation></Navigation>
     <NavigationContainer>
       <AuthProvider>
         <Stack.Navigator initialRouteName='SignIn'>
-          <Stack.Screen name="SignUp" component={SignUp}></Stack.Screen>
-          <Stack.Screen name="SignIn" component={SignIn}></Stack.Screen>
-          <Stack.Screen name="Home" component={Home} options={{ headerRight: () => <HeaderTabs /> }}></Stack.Screen>
+          <Stack.Group screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SignIn" component={SignIn} ></Stack.Screen>
+          </Stack.Group>
+          <Stack.Screen name="Home" component={Home} options={({ navigation }) => ({
+            headerTitle: (props) => <LogoTitle {...props} />,
+            headerRight: () => (
+              <FontAwesome5 name="sign-out-alt" size={25} color="darkmagenta" onPress={() => navigation.navigate("SignIn")} />
+            ),
+            headerBackVisible: false,
+          })}></Stack.Screen>
           <Stack.Screen name="Course" component={Course} />
-          <Stack.Screen name="Account" component={Account} />
+          <Stack.Screen name="Account" component={Account} options={{headerBackVisible: false}}/>
           <Stack.Screen name="Submitters" component={Submitters} />
         </Stack.Navigator>
       </AuthProvider>
     </NavigationContainer>
-
   );
 }
-
 
 const styles = StyleSheet.create({
   layout: {
