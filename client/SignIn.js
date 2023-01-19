@@ -5,17 +5,18 @@ import axios from "axios"
 import { HOST } from "../models/network"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { AuthContext } from '../context/auth'
-import {screenWidth,screenHeight} from './styling'
+import { screenWidth, screenHeight } from './styling'
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const SignIn = ({ navigation }) => {
-    //const [email, setEmail] = useState("haytham_r10_r9@hotmail.com");
-    //const [password, setPassword] = useState("haytham123");
-    const [email, setEmail] = useState("alex@gmail.com");
-    const [password, setPassword] = useState("alex123");
+    const [email, setEmail] = useState("haytham@gmail.com");
+    const [password, setPassword] = useState("haytham123");
+    //const [email, setEmail] = useState("alex@gmail.com");
+   // const [password, setPassword] = useState("alex123");
     const [showRequiredFields, SetShowRequiredFields] = useState(false)
     const [state, setState] = useState(AuthContext)
     const { courses, setCourses } = useState(AuthContext)
-    console.log(screenHeight)
+    const [showPassword, setShowPassword] = useState(false)
 
     useEffect(() => {
 
@@ -23,20 +24,19 @@ const SignIn = ({ navigation }) => {
 
     const handleSubmit = async () => {
 
-        //setEmail("alex@gmail.com")
-        //setPassword("alex123")
-
         if (email === '' || password === '') {
             //alert("All fields are required");
             SetShowRequiredFields(true)
             return;
         }
-        const resp = await axios.post(`http://${HOST}:8000/api/signin`, { email, password }).catch(err => console.log(err));
+        const resp = await axios.post(`${HOST}/signin`, { email, password }).catch(err => console.log(err));
+        //console.log(resp)
         if (resp.data.error)
             alert(resp.data.error)
         else {
+
             setState(resp.data)
-            console.log(resp.data)
+            //console.log(resp.data)
             SetShowRequiredFields(false)
             await AsyncStorage.setItem("auth-rn", JSON.stringify(resp.data)).catch(err => err)
             navigation.navigate('Home')
@@ -52,20 +52,26 @@ const SignIn = ({ navigation }) => {
                 <Text style={styles.signupText}>Sign In</Text>
                 <View style={{ marginHorizontal: 24 }}>
                     <Text style={{ fontSize: 16, color: '#8e93a1' }}>EMAIL
-                        {showRequiredFields ? <Text style={{ color: "darkred", fontWeight: "bold", fontSize: 12 }}> *</Text> : console.log("")}
+                        {showRequiredFields ? <Text style={{ color: "darkred", fontWeight: "bold", fontSize: 12 }}> *</Text> : ''}
                     </Text>
                     <TextInput style={styles.signupInput} value={email} onChangeText={text => setEmail(text)} autoCompleteType="email" keyboardType="email-address" />
                 </View>
                 <View style={{ marginHorizontal: 24 }}>
-                    <Text style={{ fontSize: 16, color: '#8e93a1' }}>PASSWORD
-                        {showRequiredFields ? <Text style={{ color: "darkred", fontWeight: "bold", fontSize: 12 }}> *</Text> : console.log("")}
-                    </Text>
-                    <TextInput style={styles.signupInput} value={password} onChangeText={text => setPassword(text)} secureTextEntry={true} autoComplteType="password" />
+                    <View style={{ flexDirection:'row',justifyContent:'space-between' }}>
+                        <Text style={{ fontSize: 16, color: '#8e93a1' }}>PASSWORD
+                            {showRequiredFields ? <Text style={{ color: "darkred", fontWeight: "bold", fontSize: 12 }}> *</Text> : ''}
+                        </Text>
+                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                            <FontAwesome5 name={showPassword ? "eye-slash" : "eye"} size={20} color="black" />
+                        </TouchableOpacity>
+                    </View>
+                    <TextInput style={styles.signupInput} value={password} onChangeText={text => setPassword(text)} secureTextEntry={!showPassword} autoComplteType="password"/>
                 </View>
+
                 <TouchableOpacity onPress={handleSubmit} style={styles.buttonStyle}>
-                    <Text style={styles.buttonText}>Submit</Text>
+                    <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
-                {showRequiredFields ? <Text style={{ color: "darkred", fontWeight: "bold", fontSize: 12, textAlign: 'center', marginTop: 10 }}>Please fill out all required fields*</Text> : console.log("")}
+                {showRequiredFields ? <Text style={{ color: "darkred", fontWeight: "bold", fontSize: 12, textAlign: 'center', marginTop: 10 }}>Please fill out all required fields*</Text> : ''}
 
             </View>
         </KeyboardAwareScrollView>
@@ -103,7 +109,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     imageContainer: { justifyContent: "center", alignItems: "center" },
-    imageStyles: { width: screenWidth*(95/100), height: screenHeight*(1/3), marginBottom: 10 }
+    imageStyles: { width: screenWidth * (95 / 100), height: screenHeight * (1 / 3), marginBottom: 10 }
 })
 
 export default SignIn

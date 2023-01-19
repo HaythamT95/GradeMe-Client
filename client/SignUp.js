@@ -17,7 +17,7 @@ const SignUp = ({ navigation }) => {
             alert("All fields are required");
             return;
         }
-        const resp = await axios.post(`http://${HOST}:8000/api/signup`, { name, email, password });
+        const resp = await axios.post(`${HOST}/api/signup`, { name, email, password });
         if(resp.data.error)
             alert(resp.data.error)
         else{
@@ -31,7 +31,7 @@ const SignUp = ({ navigation }) => {
         <KeyboardAwareScrollView contentContainerStyle={styles.container}>
             <View style={{ marginVertical: 100 }}>
                 <View style={styles.imageContainer}>
-                    <Image source={require('../assets/logo.jpg')} style={styles.imageStyles}></Image>
+                    {/* <Image source={require('../assets/logo.jpg')} style={styles.imageStyles}></Image> */}
                 </View>
                 <Text style={styles.signupText}>SignUp</Text>
                 <View style={{ marginHorizontal: 24 }}>

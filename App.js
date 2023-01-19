@@ -1,7 +1,6 @@
-import { StyleSheet, Button, Text, Image, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import SignUp from './client/SignUp'
 import SignIn from './client/SignIn'
 import Home from './client/Home'
 import Account from './client/Account';
@@ -10,10 +9,6 @@ import Submitters from './client/Submitters';
 import axios from "axios"
 import { HOST } from "./models/network"
 import { AuthContext, AuthProvider } from './context/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import HeaderTabs from './components/HeaderTabs'
-import { useContext } from 'react';
-import Navigation from './components/Navigation';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const Stack = createNativeStackNavigator();
@@ -34,7 +29,7 @@ export default function App() {
 
   const checkConnection = async () => {
 
-    const resp = await axios.get(`http://${HOST}:8000/hello`).catch(err => err)
+    const resp = await axios.get(`${HOST}/hello`).catch(err => err)
     if (resp.data.error) {
       console.log(resp.data.error)
       return
@@ -54,13 +49,13 @@ export default function App() {
           <Stack.Screen name="Home" component={Home} options={({ navigation }) => ({
             headerTitle: (props) => <LogoTitle {...props} />,
             headerRight: () => (
-              <FontAwesome5 name="sign-out-alt" size={25} color="darkmagenta" onPress={() => navigation.navigate("SignIn")} />
+              <FontAwesome5 name="sign-out-alt" size={25} color="black" onPress={() => navigation.navigate("SignIn")} />
             ),
             headerBackVisible: false,
           })}></Stack.Screen>
           <Stack.Screen name="Course" component={Course} />
           <Stack.Screen name="Account" component={Account} options={{headerBackVisible: false}}/>
-          <Stack.Screen name="Submitters" component={Submitters} />
+          <Stack.Screen name="Submitters" component={Submitters}/>
         </Stack.Navigator>
       </AuthProvider>
     </NavigationContainer>

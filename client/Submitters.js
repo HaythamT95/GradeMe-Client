@@ -1,50 +1,75 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, StyleSheet, Text, View,FlatList,TouchableOpacity,Modal,Pressable,TextInput } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, Pressable, TextInput, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'
 import * as WebBrowser from 'expo-web-browser';
 import { HOST } from "../models/network"
 import axios from "axios"
+import { useNavigation } from '@react-navigation/native';
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import moment from 'moment-timezone'
 
 const Submitters = ({ navigation, route }) => {
     const [listOfSubmitter, setListOfSubmitter] = useState([])
     const [modalVisible, setModalVisible] = useState(false)
-    const [exerciseID,setExerciseID]=useState()
-    const [studentId,setStudentID]=useState('')
-    const [studentGrade,setStudentGrade]=useState("")
-    const [comment,setComment] = useState("")
-    const [studentName,setStudentName] = useState('')
-    console.log(listOfSubmitter)
+    const [exerciseID, setExerciseID] = useState()
+    const [studentId, setStudentID] = useState('')
+    const [studentGrade, setStudentGrade] = useState("")
+    const [comment, setComment] = useState("")
+    const [studentName, setStudentName] = useState('')
+    const nav = useNavigation()
+    const [dateUntil, setdateUntil] = useState()
+    const [image, setImage] = useState([{
+        studentID: '', image: ''
+    }])
+
+    function setdateUntilFunc(date) {
+        let twoHoursBefore = new Date(date);
+        twoHoursBefore.setHours(twoHoursBefore.getHours() - 2);
+        setdateUntil(twoHoursBefore)
+    }
+
     useEffect(() => {
         setListOfSubmitter(route.params?.listOfSubmitter)
         setExerciseID(route.params?.exerciseID)
-    },[]);
+        setdateUntilFunc(new Date(route.params?.dateUntil))
+        //setdateUntil(new Date(route.params?.dateUntil))
+        nav.setOptions({ title: route.params?.title })
+        setImage(route.params?.images)
+    }, []);
+    //console.log(image)
+    const convertDateToMyZone = (date) => {
+        const utcTime = new Date(date)
+        const timeZone = 'Asia/Jerusalem';
+        const localTime = moment(utcTime).tz(timeZone).format('YYYY-MM-DD HH:mm:ss');
+        return localTime
+    }
 
-    const handleSubmit = async ()=>{
-        try{
-            if(studentGrade < 0 || studentGrade > 100){
+    const handleSubmit = async () => {
+        try {
+            if (studentGrade < 0 || studentGrade > 100) {
                 alert("Please enter valid grade");
                 return
             }
-            const response = await axios.post(`http://${HOST}:8000/updateStudentGrade`, {exerciseID,studentId,studentGrade,comment}).then(res => {
+            const response = await axios.post(`${HOST}/updateStudentGrade`, { exerciseID, studentId, studentGrade, comment }).then(res => {
                 alert("Submit success");
-                console.log(res)
+                //console.log(res)
             });
-        }catch(e){console.log(e)}
+        } catch (e) { console.log(e) }
     }
 
     const downloadFile = async () => {
         try {
-            await WebBrowser.openBrowserAsync(`http://${HOST}:8000/downloadUserFile?param1=${exerciseID}&param2=${studentId}`);
+            await WebBrowser.openBrowserAsync(`${HOST}/downloadUserFile?param1=${exerciseID}&param2=${studentId}`);
             alert("Download finished")
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     };
 
     const myListEmpty = () => {
         return (
             <View style={{ alignItems: "center" }}>
-                <Text style={styles.item}>No Submitters Yet</Text>
+                <Text style={styles.mainText}>No Submitters Yet</Text>
             </View>
         );
     };
@@ -55,24 +80,51 @@ const Submitters = ({ navigation, route }) => {
                 style={{
                     height: 1,
                     width: "95%",
-                    backgroundColor: "#CED0CE",
                     marginLeft: "2%",
                     marginRight: "2%",
+                    marginBottom: "2%",
                 }}
             />
         );
     };
 
+
+    function getImageURL(studentID) {
+        let student = image.filter(student => student.studentID === studentID)
+        if (student.length > 0) {
+            return 'data:image/jpeg;base64,' + student[0].image;
+        }
+        else {
+            return 0;
+        }
+    }
+
     const Item = ({ item, onPress }) => (
+
+
         <TouchableOpacity onPress={onPress}>
-            <Text style={{
-                    //  padding: 10,
+            <View style={{ flex: 1, flexDirection: "row", }}>
+                {/* {image.map(student => {
+                    if (student.studentID === item.studentID)
+                        URL = 'data:image/jpeg;base64,' + student.image;
+                    else
+                        URL = '';
+                })} */}
+                {getImageURL(item.studentID) === 0 ? <Image source={require("../assets/blank-profile-pic.png")} style={styles.avatar} /> :
+                    <Image style={styles.avatar} source={{ uri: getImageURL(item.studentID) }} />}
+
+                <Text style={{
+                    padding: 5,
                     fontSize: 25,
-                    // height: 44,
                     color: "#1a8cff",
                     flex: 1,
                 }}>{item.studentName}</Text>
-            
+                <Text style={{
+                    fontSize: 15,
+                    color: convertDateToMyZone(item.submitDate) > convertDateToMyZone(dateUntil) ? 'red' : 'green',
+                    justifyContent: 'flex-end'
+                }}>{convertDateToMyZone(item.submitDate) > convertDateToMyZone(dateUntil) ? "Late Submit" : "Early Submit"}</Text>
+            </View>
         </TouchableOpacity>
     );
 
@@ -96,6 +148,8 @@ const Submitters = ({ navigation, route }) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flex: 1 }}>
+                {listOfSubmitter.length > 0 ? <Text style={styles.mainText}>{"Submitters"}</Text> :
+                    ''}
                 <FlatList
                     data={listOfSubmitter}
                     renderItem={renderItem}
@@ -103,41 +157,52 @@ const Submitters = ({ navigation, route }) => {
                     keyExtractor={(item) => item.studentID}
                     ItemSeparatorComponent={renderSeparator}
                 />
-                 {modalVisible===true?
-                
-                <Modal
-                    animationType={"fade"}
-                    transparent={false}
-                    visible={modalVisible}
-                    onRequestClose={() => { console.log("Modal has been closed.") }}>
-                    <View style={styles.centeredView}>
-                        <View style={styles.modalView}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                <Pressable
-                                    style={styles.buttonClose}
-                                    onPress={() => setModalVisible(false)}
-                                >
-                                    <Text style={styles.textStyle}>X</Text>
-                                </Pressable>
-                            </View>
-                            <Text style={[styles.modalText, { marginBottom: 10 }]}>Student Name: {studentName}</Text>
-                            
-                            <Pressable style={[styles.addBtn, { marginBottom: 50 }]} onPress={downloadFile}><Text style={{ color: "blue", fontSize: 20 }}>Download
-                                <MaterialIcons name="file-download" size={20} color="black"></MaterialIcons>
-                            </Text></Pressable>
-                           
-                            <Text style={[styles.modalText, { marginBottom: 10 }]}>Grade:{studentGrade}
-                           
-                             </Text>
-                              <TextInput style={styles.input} keyboardType='numeric' onChangeText={(text) => setStudentGrade(text)}></TextInput>
-                            <Text style={[styles.modalText, { marginBottom: 10 }]} >Comments: {}
-                             </Text>
-                             <TextInput style={styles.input} multiline={true} onChangeText={ (text)=>setComment(text)}></TextInput>
-                            <Pressable style={[styles.button, { backgroundColor: "green" }]} onPress={handleSubmit}><Text style={styles.text}>Submit</Text></Pressable>
 
+                {modalVisible === true ?
+
+                    <Modal
+                        animationType={"fade"}
+                        transparent={false}
+                        visible={modalVisible}
+                        onRequestClose={() => { console.log("Modal has been closed.") }}>
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                    <Pressable
+                                        style={styles.buttonClose}
+                                        onPress={() => setModalVisible(false)}
+                                    >
+                                        <Text style={styles.textStyle}>X</Text>
+                                    </Pressable>
+                                </View>
+
+                                <Text style={{ textAlign: "center", fontSize: 25, fontWeight: 'bold', marginBottom: "15%" }}>Submitter Details</Text>
+                                <Text style={{ fontSize: 20, marginBottom: '10%' }}>Student Name: {studentName}</Text>
+
+
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ fontSize: 20 }}>Student File: </Text>
+                                    <Pressable style={[styles.addBtn]} onPress={downloadFile}>
+                                        <Text style={{ color: "blue", fontSize: 20 }}>Download  <FontAwesome5 style={{ marginLeft: "10%" }} name="file-download" size={25} color="black" /></Text>
+                                    </Pressable>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', marginTop: '10%' }}>
+                                    <Text style={{ fontSize: 20 }}>Grade:</Text>
+                                    <TextInput style={[styles.input, { minWidth: "15%", textAlign: 'center' }]} keyboardType='numeric' maxLength={3} onChangeText={(text) => {
+                                        setStudentGrade(text)
+                                    }}>{studentGrade ? studentGrade : ''}</TextInput>
+                                </View>
+
+                                <View style={{ flexDirection: 'column' }}>
+                                    <Text style={{ fontSize: 20, marginBottom: 10 }} >Comments: { } </Text>
+                                    <TextInput style={styles.input} multiline={true} onChangeText={(text) => setComment(text)}>{comment ? comment : ''}</TextInput>
+                                </View>
+                                <Pressable style={[styles.button, { width: '50%', borderRadius: 20, backgroundColor: "green" }]} onPress={handleSubmit}><Text style={styles.text}>Submit</Text></Pressable>
+
+                            </View>
                         </View>
-                    </View>
-                </Modal> : console.log("false")}
+                    </Modal> : ''}
             </View>
         </SafeAreaView>
     )
@@ -149,10 +214,25 @@ const styles = StyleSheet.create({
         width: "95%",
         marginLeft: "2%",
         marginRight: "2%",
-        backgroundColor: "#e6e6e6",
+        backgroundColor: "#ffffff",
         borderWidth: 1,
-        borderColor: "black",
-        padding: 5,
+        borderColor: "white",
+        padding: 10,
+        borderRadius: 15,
+    },
+    mainText: {
+        fontSize: 30,
+        textAlign: "center",
+        padding: 10,
+        marginVertical: 8,
+        marginHorizontal: 16,
+        fontWeight: 'bold',
+    },
+    textStyle: {
+        textAlign: "center",
+        paddingLeft: 5,
+        paddingRight: 5,
+        fontSize: 20,
     },
     centeredView: {
         flex: 1,
@@ -195,14 +275,30 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         elevation: 3,
         backgroundColor: '#3066be',
-        width: '95%',
+        width: '50%',
         marginVertical: 15,
     },
     input: {
         borderBottomWidth: 0.5,
         borderBottomColor: "#8e93a1",
+        marginLeft: 20,
         marginBottom: 30,
-        minWidth: "50%"
+        minWidth: "60%",
+        fontSize: 20,
+    },
+    buttonClose: {
+        backgroundColor: "lightgrey",
+        borderRadius: 50,
+    },
+    addBtn: {
+        backgroundColor: "transparent",
+        alignSelf: 'center',
+    },
+    avatar: {
+        height: 50,
+        width: 50,
+        borderRadius: 100,
+        padding: 20,
     },
 })
 

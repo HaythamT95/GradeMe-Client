@@ -16,7 +16,7 @@ export default function Home({ navigation }) {
             const data = await AsyncStorage.getItem("auth-rn").catch(err => err);
             const dataParsed = JSON.parse(data)
             const list = dataParsed.user.listOfCourses
-            const resp = axios.get(`http://${HOST}:8000/getCourses`, { params: { 'list': list } }).then((resJson) => {
+            const resp = axios.get(`${HOST}/getCourses`, { params: { 'list': list } }).then((resJson) => {
                 const dbData = Object.values(resJson.data)
                 setCourse(dbData)
                 isLoading(true)
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#3066be',
         borderRadius: 15,
-        padding: 25,
+        padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
         flexDirection: 'row',
