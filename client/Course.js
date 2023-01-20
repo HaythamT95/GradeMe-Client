@@ -182,6 +182,10 @@ const Course = ({ navigation, route }) => {
                     type: 'application/' + fileType
                 };
                 // console.log(fileToUpload, '...............file')
+                if(fileType!=='pdf' && fileType!=='docx'){
+                    alert('File can only be of type PDF or docx')
+                    return
+                }
                 setDoc(fileToUpload);
             }
         });
@@ -423,9 +427,9 @@ const Course = ({ navigation, route }) => {
                                 : ''}
                             <Text style={[{ fontSize: 20, marginBottom: '10%', marginTop: '10%' }]}>Grade: {grade} </Text>
                             <Text style={[{ fontSize: 20 }]}>Comments:</Text>
-                            <Text style={[{ fontSize: 20, marginBottom: '10%' }]}>"{comment}"</Text>
+                            <Text style={[{ fontSize: 20, marginBottom: '10%' }]}>{comment}</Text>
                             <Pressable style={[styles.button, { width: '55%', borderRadius: 20, backgroundColor: "green" }]} onPress={handleSubmit}><Text style={styles.text}>Submit</Text></Pressable>
-
+                            <Text style={{fontSize:15,color:'red',alignSelf:'center'}}>*files must be pdf or docx</Text>
                         </View>
                     </View>
                 </Modal> : ''}
@@ -588,6 +592,7 @@ const Course = ({ navigation, route }) => {
                             </View>
                             : ''}
                         <Pressable style={[styles.button, { width: '55%', borderRadius: 20, backgroundColor: "green", marginTop: "10%" }]} onPress={handleSubmit}><Text style={styles.text}>Submit</Text></Pressable>
+                        <Text style={{fontSize:15,color:'red',alignSelf:'center'}}>*files must be pdf or docx</Text>
                     </View>
                 </View>
             </Modal>

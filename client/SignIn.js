@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image,ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios"
@@ -9,38 +9,55 @@ import { screenWidth, screenHeight } from './styling'
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const SignIn = ({ navigation }) => {
-    const [email, setEmail] = useState("haytham@gmail.com");
-    const [password, setPassword] = useState("haytham123");
-    //const [email, setEmail] = useState("alex@gmail.com");
-   // const [password, setPassword] = useState("alex123");
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
     const [showRequiredFields, SetShowRequiredFields] = useState(false)
     const [state, setState] = useState(AuthContext)
     const { courses, setCourses } = useState(AuthContext)
     const [showPassword, setShowPassword] = useState(false)
+    const [loading, isLoading] = useState(null)
 
     useEffect(() => {
 
     })
 
-    const handleSubmit = async () => {
+    if (loading===true) {
+        return (
+            <ActivityIndicator
+                animating={true}
+                style={styles.container}
+                size="large"
+            />
+        );
+    }
 
+    const handleSubmit = async () => {
+        isLoading(true)
         if (email === '' || password === '') {
             //alert("All fields are required");
             SetShowRequiredFields(true)
+            isLoading(false)
             return;
         }
-        const resp = await axios.post(`${HOST}/signin`, { email, password }).catch(err => console.log(err));
-        //console.log(resp)
-        if (resp.data.error)
-            alert(resp.data.error)
-        else {
-
-            setState(resp.data)
-            //console.log(resp.data)
+        //const resp = await axios.post(`${HOST}/signin`, { email, password }).catch(err => console.log(err));
+        const resps = await axios.post(`${HOST}/signin`, { email, password }).then(async res=>{
+            isLoading(false)
+            setState(res.data)
             SetShowRequiredFields(false)
-            await AsyncStorage.setItem("auth-rn", JSON.stringify(resp.data)).catch(err => err)
+            await AsyncStorage.setItem("auth-rn", JSON.stringify(res.data)).catch(err => err)
             navigation.navigate('Home')
-        }
+        }).catch(err => console.log(err));
+        //console.log(resp)
+        // if (resp.data.error)
+        //     alert(resp.data.error)
+        // else {
+
+        //     setState(resp.data)
+        //     //console.log(resp.data)
+        //     SetShowRequiredFields(false)
+        //     await AsyncStorage.setItem("auth-rn", JSON.stringify(resp.data)).catch(err => err)
+        //     navigation.navigate('Home')
+        // }
     };
 
     return (
