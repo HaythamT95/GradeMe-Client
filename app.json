@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/moodle-logo.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.moodle.grademe"
