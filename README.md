@@ -8,3 +8,5 @@ Lecturers can add, update, delete homeworks and laboratories.
 Lecturers can see students that submitted late.
 
 Students download the homework to their mobile, and upload a solution.
+
+Server URL: https://github.com/HaythamT95/GradeMe-Server.git
